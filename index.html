@@ -1,0 +1,117 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class = "buttons">
+        </div>
+        <input name = "title" type="text" class="form-control text-center mb-3" id="searchBox" value="" placeholder="Search here....">
+        <button id="submit">
+            SUBMIT
+        </button>
+        <div class = "row gifs">
+        </div>
+        
+        <script>
+            var topics = ["Fox", "Turtle", "Sheep", "Rhino", "Antelope", "Cheetah", "Possum", "Snek", "Dog", "Cat"]
+            var gif="";
+
+            function showButton() {
+                $(".buttons").empty();
+                for (i=0;i<topics.length;i++){
+                    var btn = $("<button>");
+                    btn.addClass("btn btn-primary button1");
+                    btn.text(topics[i]);
+                    btn.attr("data-name", topics[i]);
+                    $(".buttons").append(btn);
+
+                }
+            }
+            showButton();
+
+            $("#submit").click(function(){
+                userSearch = $("#searchBox").val();
+                topics.push(userSearch.trim());
+                showButton();
+                displayGifs();
+             })
+
+            function displayGifs(){
+                $(".gifs").empty();    
+                var queryURL="http://api.giphy.com/v1/gifs/search?q=" + gif +"&api_key=Ee80L10FmfZYfDdMsxrMamFaibPb5x0W"
+
+                $.ajax({
+                    url: queryURL,
+                    method: "GET"
+                }).then(function(response){
+                    console.log(response)
+                    for (i=0;i<20;i++){
+                        var col = $("<div>");
+                            col.addClass("col-md-3 mb-3 text-center");
+                        var card = $("<div>");
+                            card.addClass("card");
+                        var img = $("<img>");
+                            img.addClass("gifClick");
+                            img.attr("src", response.data[i].images.fixed_width_still.url);
+                            img.attr("data-gifStill", response.data[i].images.fixed_width_still.url);
+                            img.attr("data-gifPlay", response.data[i].images.fixed_width.url);
+                            img.attr("data-state", "still");
+                        var title = $("<p>");
+                            title.text(response.data[i].title);
+                        var rating = $("<p>")
+                            rating.text("Rating : " + response.data[i].rating);
+
+
+                            col.html(card)
+                            card.append(img);
+                            card.append(title);
+                            card.append(rating);
+                            $(".gifs").prepend(col);
+
+                    }
+                })
+
+            }
+
+            function gifDisplay(){
+                gif = $(this).attr("data-name");
+                displayGifs();
+                console.log(this);
+            }
+
+        
+               
+                function gifClick(){
+                var state = $(this).attr("data-state");
+                if (state ==="still"){
+                    $(this).attr("src", $(this).attr("data-gifPlay"));
+                    $(this).attr("data-state", "animate");
+                }else{
+                    $(this).attr("src", $(this).attr("data-gifStill"));
+                    $(this).attr("data-state", "still");
+                }
+                };
+          
+
+            $(document).on("click", ".gifClick", gifClick);
+            $(document).on("click", ".button1", gifDisplay);
+
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        </script>
+
+    </body>
+</html>
